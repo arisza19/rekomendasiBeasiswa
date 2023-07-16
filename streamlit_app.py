@@ -133,9 +133,10 @@ class Preprocessing(Data):
         try:
             self.judul_halaman('Pre Processing dan Transformation','')
             self.show_null_dataset()
-            if self.state['tombol'] == 0:
-                if st.button("Mulai Pre Processing dan Transformation"):
-                    self.pre_processing()
+            if not self.state['dataset'].empty:
+                if self.state['tombol'] == 0:
+                    if st.button("Mulai Pre Processing dan Transformation"):
+                        self.pre_processing()
             self.tampil_dataset()
         except (IndexError):
             st.write('')
