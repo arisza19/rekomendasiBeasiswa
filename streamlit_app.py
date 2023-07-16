@@ -50,8 +50,8 @@ class Data():
 
     def __init__(self):
         self.state = st.session_state.setdefault('state', {})
-        if 'dataset' not in self.state:
-            self.state['dataset'] = pd.DataFrame()
+        if 'datasetraw' not in self.state:
+            self.state['datasetraw'] = pd.DataFrame()
 
     # Fungsi judul halaman
     def judul_halaman(self, header, subheader):
@@ -65,11 +65,11 @@ class Data():
         if uploaded_file is not None:
             dataset = pd.read_excel(uploaded_file)
 
-            self.state['dataset'] = dataset
+            self.state['datasetraw'] = dataset
 
     def tampil_dataset(self):
-        if not self.state['dataset'].empty:
-            st.dataframe(self.state['dataset'])
+        if not self.state['datasetraw'].empty:
+            st.dataframe(self.state['datasetraw'])
 
     def menu_data(self):
         self.judul_halaman('Data','Import Dataset') 
@@ -88,16 +88,18 @@ class Preprocessing(Data):
             self.state['tombol'] = 0
 
     def show_null_dataset(self):
-        if not self.state['dataset'].empty:
+        if not self.state['datasetraw'].empty:
             st.subheader('Dataset')
             st.write("Jumlah nilai null pada dataset")
-            st.table(self.state['dataset'].isnull().sum())
+            st.table(self.state['datasetraw'].isnull().sum())
         else:
             st.warning("Tidak ada data yang diupload atau data kosong")
 
     def pre_processing(self):
-        if (not self.state['dataset'].empty):
+        if (not self.state['datasetraw'].empty):
             self.state['tombol'] = 1
+
+            self.state['dataset'] = self.state['datasetraw'].copy()
 
             # Preprocessing data
             self.state['dataset'] = self.state['dataset'].dropna()
@@ -133,7 +135,7 @@ class Preprocessing(Data):
         try:
             self.judul_halaman('Pre Processing dan Transformation','')
             self.show_null_dataset()
-            if not self.state['dataset'].empty:
+            if not self.state['datasetraw'].empty:
                 if self.state['tombol'] == 0:
                     if st.button("Mulai Pre Processing dan Transformation"):
                         self.pre_processing()
